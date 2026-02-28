@@ -1,0 +1,16 @@
+order_id,delay_hours,damage_severity,customer_tier,past_complaints
+1001,0,0,Regular,0
+1002,1,0,Gold,1
+1003,2,0,Gold,0
+1004,5,0,Platinum,1
+1005,0,3,Regular,2
+1006,8,6,Platinum,0
+1007,3,0,Regular,1
+1008,10,4,Gold,3
+1009,0,1,Regular,0
+1010,7,7,Platinum,2
+1011,12,0,Gold,0
+1012,4,6,Regular,3
+1013,6,8,Platinum,4
+1014,0,0,Gold,0
+1015,3,2,Gold,1
