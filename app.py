@@ -377,7 +377,15 @@ import os
 import math
 
 app = Flask(__name__)
-CORS(app)
+
+# Allow requests from your local frontend and future deployed frontend
+CORS(app, resources={
+    r"/*": {
+        "origins": [
+            "http://localhost:5173",  # Update this later!
+        ]
+    }
+})
 
 # =====================================================================
 # REAL ML MODEL INTEGRATION (S-LEARNER)
@@ -523,16 +531,26 @@ def simulate_scenario():
     best_action_key = max(utilities, key=utilities.get)
     # Renamed 'do_nothing' to 'Claim Denied / Manual Review' for the UI
     display_actions = {'do_nothing': 'Claim Denied / Manual Review', 'email': 'Apology Email', 'credit': '$10 Store Credit', 'refund': 'Full Refund'}
+    
+    final_action_name = display_actions.get(best_action_key, best_action_key.title())
+    
+    # HARD GOVERNANCE OVERRIDE: Prevent the ML from auto-refunding fraudsters
+    if features['fatigue'] >= 5:
+        final_action_name = "Claim Denied / Manual Review"
 
     trace.append({
         "module": "S-Learner Optimizer",
         "title": "Expected Utility Math",
         "params": "Causal Inference via XGBoost",
         "details": details_str.strip(),
-        "decision": display_actions.get(best_action_key, best_action_key.title())
+        "decision": final_action_name
     })
 
     return jsonify({"timestamp": datetime.utcnow().isoformat(), "trace": trace})
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    # Render assigns a port dynamically. Default to 5000 for local testing.
+    port = int(os.environ.get('PORT', 5000))
+    
+    # host='0.0.0.0' is required for Render to expose the server externally
+    app.run(host='0.0.0.0', port=port)
